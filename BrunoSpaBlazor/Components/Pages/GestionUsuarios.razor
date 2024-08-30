@@ -1,0 +1,138 @@
+﻿@page "/GestionUsuarios"
+@using BrunoSpaBlazor.Models
+@using BrunoSpaBlazor.Services
+@rendermode InteractiveServer
+@inject UsuarioService UsuarioService
+
+<h3>Gestion de Usuarios</h3>
+<div class="row">
+    <div class="card col-12 col-md-4 mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Agregar Usuarios</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Agregue nuevos Usuarios en el siguiente formulario</h6>
+            <EditForm Model="GetUsuario" OnValidSubmit="AgregarUsuario">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div>
+                    <label for="Nombre">Nombre:</label>
+                    <InputText id="TxtNombre" @bind-Value="GetUsuario.NombreUsuario" class="form-control" />
+                    <ValidationMessage For="@(() => GetUsuario.NombreUsuario)" />
+                </div>
+                <div>
+                    <label for="Apellido">Apellido:</label>
+                    <InputText id="TxtApellido" @bind-Value="GetUsuario.ApellidoUsuario" class="form-control" />
+                    <ValidationMessage For="@(() => GetUsuario.ApellidoUsuario)" />
+                </div>
+                <div>
+                    <label for="Edad">Edad:</label>
+                    <InputNumber id="TxtEdad" @bind-Value="GetUsuario.EdadUsuario" class="form-control" @onblur="CalculaFechaNacimiento" />
+                    <ValidationMessage For="@(() => GetUsuario.EdadUsuario)" />
+                </div>
+                <div>
+                    <label for="FechaNacimiento">Fecha de Nacimiento:</label>
+                    <InputDate id="TxtFechaNacimiento" @bind-Value="GetUsuario.FechaNacimientoUsuario" class="form-control" />
+                    <ValidationMessage For="@(() => GetUsuario.FechaNacimientoUsuario)" />
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <Toasts class="p-3" Messages="messages" AutoHide="true" Delay="6000" Placement="ToastsPlacement.TopRight" />
+                    <button class="btn btn-primary" type="submit">@((isEditing) ? "Actualizar" : "Agregar")</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="card col-12 col-md-8 mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Lista de Usuarios</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Lista de Usuarios del Sistema</h6>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Edad</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var usuario in UsuarioService.ObtenerUsuarios())
+                    {
+                        <tr>
+                            <td>@usuario.IdUsuario</td>
+                            <td>@usuario.NombreUsuario</td>
+                            <td>@usuario.ApellidoUsuario</td>
+                            <td>@usuario.EdadUsuario</td>
+                            <td>@usuario.FechaNacimientoUsuario</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
+                                <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
+
+    private ToastMessage CreateToastMessage(ToastType toastType, string message)
+    => new ToastMessage
+        {
+            Type = toastType,
+            Message = message,
+        };
+
+    UsuarioModel GetUsuario = new UsuarioModel();
+    bool isEditing = false;
+
+    private void AgregarUsuario()
+    {
+        if (isEditing)
+        {
+            UsuarioService.EditarUsuario(GetUsuario);
+            ShowMessage(ToastType.Warning, "Usuario editado exitosamente.");
+            isEditing = false;
+        }
+        else
+        {
+            UsuarioService.AgregarUsuario(GetUsuario);
+            ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
+        }
+        LimpiarFormulario();
+    }
+
+    private void EditarUsuario(UsuarioModel usuario)
+    {
+        GetUsuario = usuario;
+        isEditing = true;
+    }
+
+    private void EliminarUsuario(int idUsuario)
+    {
+        UsuarioService.EliminarUsuario(idUsuario);
+        ShowMessage(ToastType.Danger, "Usuario eliminado exitosamente.");
+        LimpiarFormulario();
+    }
+
+    private void CalculaFechaNacimiento()
+    {
+        int anioNacimiento = DateTime.Now.Year - GetUsuario.EdadUsuario;
+        int mes = GetUsuario.FechaNacimientoUsuario.Month > 0 ? GetUsuario.FechaNacimientoUsuario.Month : 1;
+        int dia = GetUsuario.FechaNacimientoUsuario.Day > 0 ? GetUsuario.FechaNacimientoUsuario.Day : 1;
+        GetUsuario.FechaNacimientoUsuario = new DateOnly(anioNacimiento, mes, dia);
+    }
+
+    private void LimpiarFormulario()
+    {
+        GetUsuario = new UsuarioModel();
+        GetUsuario.FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now);
+    }
+}
+
