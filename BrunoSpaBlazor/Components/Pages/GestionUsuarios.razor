@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <label for="Edad">Edad:</label>
-                    <InputNumber id="TxtEdad" @bind-Value="GetUsuario.EdadUsuario" class="form-control" @onblur="CalculaFechaNacimiento" />
+                    <InputNumber id="TxtEdad" @bind-Value="GetUsuario.EdadUsuario" class="form-control" @onblur="CalculaFechaNacimiento" Max="100" />
                     <ValidationMessage For="@(() => GetUsuario.EdadUsuario)" />
                 </div>
                 <div>
@@ -78,20 +78,19 @@
 </div>
 
 @code {
+    #region Notificacion Toast
     List<ToastMessage> messages = new List<ToastMessage>();
-
     private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
-
     private ToastMessage CreateToastMessage(ToastType toastType, string message)
     => new ToastMessage
         {
             Type = toastType,
             Message = message,
         };
-
     UsuarioModel GetUsuario = new UsuarioModel();
     bool isEditing = false;
-
+    #endregion
+    #region Crud Usuario
     private void AgregarUsuario()
     {
         if (isEditing)
@@ -120,7 +119,8 @@
         ShowMessage(ToastType.Danger, "Usuario eliminado exitosamente.");
         LimpiarFormulario();
     }
-
+    #endregion
+    #region Utilitarios
     private void CalculaFechaNacimiento()
     {
         int anioNacimiento = DateTime.Now.Year - GetUsuario.EdadUsuario;
@@ -134,5 +134,6 @@
         GetUsuario = new UsuarioModel();
         GetUsuario.FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now);
     }
+    #endregion
 }
 

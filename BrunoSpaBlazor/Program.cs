@@ -8,7 +8,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddBlazorBootstrap();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,6 +19,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
 
 app.UseStaticFiles();
 app.UseAntiforgery();

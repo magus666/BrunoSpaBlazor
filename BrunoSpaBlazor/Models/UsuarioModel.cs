@@ -12,8 +12,8 @@ namespace BrunoSpaBlazor.Models
         [Required(ErrorMessage = "El apellido es obligatorio.")]
         public string ApellidoUsuario { get; set; } = string.Empty;
 
-        [Range(1, int.MaxValue, ErrorMessage = "La edad debe ser mayor que 0.")]
-        public int EdadUsuario { get; set; } = 0;
+        [Range(1, 100, ErrorMessage = "La edad debe ser mayor que 0 y menor o igual a 100.")]
+        public int EdadUsuario { get; set; }
 
         [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
         public DateOnly FechaNacimientoUsuario { get; set; } = DateOnly.FromDateTime(DateTime.Now);
