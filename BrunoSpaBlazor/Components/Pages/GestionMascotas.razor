@@ -2,11 +2,27 @@
 @using BrunoSpaBlazor.Models
 @using BrunoSpaBlazor.Services
 @rendermode InteractiveServer
-@inject IHttpContextAccessor HttpContextAccessor
-<h3>GestionMascotas</h3>
-<input value="ObtenerVariableSesion" />
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<h3>@storedValue</h3>
+
+<button class="btn btn-primary" @onclick="LoadFromSessionStorage">Obtener Variable de Sesión</button>
 
 @code {
+    private string storedValue = "";
+    private bool isLoaded = false;
 
+    private async Task LoadFromSessionStorage()
+    {
+        storedValue = await sessionStorage.GetItemAsync<string>("ValorSession");
+        if (storedValue == null)
+        {
+            storedValue = "La variable está Vacia";
+        }
+        else
+        {
+            storedValue = await sessionStorage.GetItemAsync<string>("ValorSession");
+        }
+    }
 }
 

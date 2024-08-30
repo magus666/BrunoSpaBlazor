@@ -1,3 +1,4 @@
+using Blazored.SessionStorage;
 using BrunoSpaBlazor.Components;
 using BrunoSpaBlazor.Services;
 
@@ -8,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddBlazoredSessionStorage();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

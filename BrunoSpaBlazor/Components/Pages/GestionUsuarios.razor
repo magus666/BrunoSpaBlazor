@@ -3,6 +3,7 @@
 @using BrunoSpaBlazor.Services
 @rendermode InteractiveServer
 @inject UsuarioService UsuarioService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 <h3>Gestion de Usuarios</h3>
 <div class="row">
@@ -87,11 +88,12 @@
             Type = toastType,
             Message = message,
         };
-    UsuarioModel GetUsuario = new UsuarioModel();
-    bool isEditing = false;
     #endregion
     #region Crud Usuario
-    private void AgregarUsuario()
+    UsuarioModel GetUsuario = new UsuarioModel();
+    bool isEditing = false;
+    string ValorVariableSesion;
+    private async void AgregarUsuario()
     {
         if (isEditing)
         {
@@ -102,6 +104,7 @@
         else
         {
             UsuarioService.AgregarUsuario(GetUsuario);
+            await SaveToSessionStorage();
             ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
         }
         LimpiarFormulario();
@@ -133,6 +136,12 @@
     {
         GetUsuario = new UsuarioModel();
         GetUsuario.FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now);
+    }
+
+    private async Task SaveToSessionStorage()
+    {
+        ValorVariableSesion = GetUsuario.NombreUsuario;
+        await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
     }
     #endregion
 }
