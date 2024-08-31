@@ -26,6 +26,16 @@
                     <ValidationMessage For="@(() => GetUsuario.ApellidoUsuario)" />
                 </div>
                 <div>
+                    <label for="Documento">Documento:</label>
+                    <InputText id="TxtDocumento" @bind-Value="GetUsuario.DocumentoUsuario" class="form-control" />
+                    <ValidationMessage For="@(() => GetUsuario.DocumentoUsuario)" />
+                </div>
+                <div>
+                    <label for="CorreoElectronico">Correo Electronico:</label>
+                    <InputText id="TxtCoreoElectronico" @bind-Value="GetUsuario.CorreoElectronicoUsuario" class="form-control" />
+                    <ValidationMessage For="@(() => GetUsuario.CorreoElectronicoUsuario)" />
+                </div>
+                <div>
                     <label for="Edad">Edad:</label>
                     <InputNumber id="TxtEdad" @bind-Value="GetUsuario.EdadUsuario" class="form-control" @onblur="CalculaFechaNacimiento" Max="100" />
                     <ValidationMessage For="@(() => GetUsuario.EdadUsuario)" />
@@ -48,34 +58,40 @@
         <CardBody>
             <CardTitle>Lista de CLientes</CardTitle>
             <CardSubTitle Class="mb-2 text-muted">Lista de Clientes del Sistema</CardSubTitle>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Edad</th>
-                        <th>Fecha de Nacimiento</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var usuario in UsuarioService.ObtenerUsuarios())
-                    {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@usuario.IdUsuario</td>
-                            <td>@usuario.NombreUsuario</td>
-                            <td>@usuario.ApellidoUsuario</td>
-                            <td>@usuario.EdadUsuario</td>
-                            <td>@usuario.FechaNacimientoUsuario</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
-                                <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
-                            </td>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Documento</th>
+                            <th>Correo Electronico</th>
+                            <th>Edad</th>
+                            <th>Fecha de Nacimiento</th>
+                            <th>Acciones</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in UsuarioService.ObtenerUsuarios())
+                        {
+                            <tr>
+                                <td>@usuario.IdUsuario</td>
+                                <td>@usuario.NombreUsuario</td>
+                                <td>@usuario.ApellidoUsuario</td>
+                                <td>@usuario.DocumentoUsuario</td>
+                                <td>@usuario.CorreoElectronicoUsuario</td>
+                                <td>@usuario.EdadUsuario</td>
+                                <td>@usuario.FechaNacimientoUsuario</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </CardBody>
     </Card>
 </div>
