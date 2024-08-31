@@ -7,10 +7,11 @@
 
 <h3>Gestion de Usuarios</h3>
 <div class="row">
-    <div class="card col-12 col-md-4 mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Agregar Usuarios</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Agregue nuevos Usuarios en el siguiente formulario</h6>
+
+    <Card Class="card col-12 col-md-4 mb-3">
+        <CardBody>
+            <CardTitle>Agregar Usuarios</CardTitle>
+            <CardSubTitle Class="mb-2 text-muted">Agregue nuevos Usuarios en el siguiente formulario</CardSubTitle>
             <EditForm Model="GetUsuario" OnValidSubmit="AgregarUsuario">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -39,13 +40,14 @@
                     <button class="btn btn-primary" type="submit">@((isEditing) ? "Actualizar" : "Agregar")</button>
                 </div>
             </EditForm>
-        </div>
-    </div>
+        </CardBody>
+    </Card>
 
-    <div class="card col-12 col-md-8 mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Lista de Usuarios</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Lista de Usuarios del Sistema</h6>
+
+    <Card Class="card col-12 col-md-8 mb-3">
+        <CardBody>
+            <CardTitle>Lista de CLientes</CardTitle>
+            <CardSubTitle Class="mb-2 text-muted">Lista de Clientes del Sistema</CardSubTitle>
             <table class="table">
                 <thead>
                     <tr>
@@ -74,8 +76,8 @@
                     }
                 </tbody>
             </table>
-        </div>
-    </div>
+        </CardBody>
+    </Card>
 </div>
 
 @code {
@@ -134,8 +136,11 @@
 
     private void LimpiarFormulario()
     {
-        GetUsuario = new UsuarioModel();
-        GetUsuario.FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now);
+        GetUsuario = new UsuarioModel
+            {
+                FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now)
+            };
+        StateHasChanged(); // Asegúrate de que la UI se actualice
     }
 
     private async Task SaveToSessionStorage()

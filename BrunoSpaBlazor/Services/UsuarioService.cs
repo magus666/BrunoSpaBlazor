@@ -33,10 +33,12 @@ namespace BrunoSpaBlazor.Services
 
         public void EliminarUsuario(int idUsuario)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.IdUsuario == idUsuario);
-            if (usuario != null)
+            var Usuario = (from x in usuarios
+                           where x.IdUsuario == idUsuario
+                           select x).FirstOrDefault();
+            if (Usuario != null)
             {
-                usuarios.Remove(usuario);
+                usuarios.Remove(Usuario);
             }
         }
     }
