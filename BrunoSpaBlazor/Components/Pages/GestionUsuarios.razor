@@ -58,40 +58,49 @@
         <CardBody>
             <CardTitle>Lista de CLientes</CardTitle>
             <CardSubTitle Class="mb-2 text-muted">Lista de Clientes del Sistema</CardSubTitle>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Documento</th>
-                            <th>Correo Electronico</th>
-                            <th>Edad</th>
-                            <th>Fecha de Nacimiento</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var usuario in UsuarioService.ObtenerUsuarios())
-                        {
+            @if (UsuarioService.ObtenerUsuarios() == null || !UsuarioService.ObtenerUsuarios().Any())
+            {
+                <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+                    <h2>No hay Datos</h2>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>@usuario.IdUsuario</td>
-                                <td>@usuario.NombreUsuario</td>
-                                <td>@usuario.ApellidoUsuario</td>
-                                <td>@usuario.DocumentoUsuario</td>
-                                <td>@usuario.CorreoElectronicoUsuario</td>
-                                <td>@usuario.EdadUsuario</td>
-                                <td>@usuario.FechaNacimientoUsuario</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
-                                    <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
-                                </td>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Documento</th>
+                                <th>Correo Electronico</th>
+                                <th>Edad</th>
+                                <th>Fecha de Nacimiento</th>
+                                <th>Acciones</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var usuario in UsuarioService.ObtenerUsuarios())
+                            {
+                                <tr>
+                                    <td>@usuario.IdUsuario</td>
+                                    <td>@usuario.NombreUsuario</td>
+                                    <td>@usuario.ApellidoUsuario</td>
+                                    <td>@usuario.DocumentoUsuario</td>
+                                    <td>@usuario.CorreoElectronicoUsuario</td>
+                                    <td>@usuario.EdadUsuario</td>
+                                    <td>@usuario.FechaNacimientoUsuario</td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </CardBody>
     </Card>
 </div>
