@@ -1,13 +1,10 @@
 ﻿@page "/GestionUsuarios"
-@using BrunoSpaBlazor.Models
-@using BrunoSpaBlazor.Services
 @rendermode InteractiveServer
 @inject UsuarioService UsuarioService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
 <h3>Gestion de Usuarios</h3>
 <div class="row">
-
     <Card Class="card col-12 col-md-4 mb-3">
         <CardBody>
             <CardTitle>Agregar Usuarios</CardTitle>
@@ -53,11 +50,10 @@
         </CardBody>
     </Card>
 
-
     <Card Class="card col-12 col-md-8 mb-3">
         <CardBody>
             <CardTitle>Lista de CLientes</CardTitle>
-            <CardSubTitle Class="mb-2 text-muted">Lista de Clientes del Sistema</CardSubTitle>
+            <CardSubTitle Class="mb-2 text-muted">Lista de Usuarios del Sistema</CardSubTitle>
             @if (UsuarioService.ObtenerUsuarios() == null || !UsuarioService.ObtenerUsuarios().Any())
             {
                 <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
@@ -106,6 +102,10 @@
 </div>
 
 @code {
+    #region Variables Globales
+    UsuarioModel GetUsuario = new UsuarioModel();
+    #endregion
+
     #region Notificacion Toast
     List<ToastMessage> messages = new List<ToastMessage>();
     private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
@@ -116,10 +116,9 @@
             Message = message,
         };
     #endregion
+
     #region Crud Usuario
-    UsuarioModel GetUsuario = new UsuarioModel();
     bool isEditing = false;
-    string ValorVariableSesion = "";
     private async void AgregarUsuario()
     {
         if (isEditing)
@@ -150,6 +149,7 @@
         LimpiarFormulario();
     }
     #endregion
+
     #region Utilitarios
     private void CalculaFechaNacimiento()
     {
@@ -165,14 +165,14 @@
             {
                 FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now)
             };
-        StateHasChanged(); // Asegúrate de que la UI se actualice
+        StateHasChanged();
     }
 
     private async Task SaveToSessionStorage()
     {
+        string ValorVariableSesion = "";
         ValorVariableSesion = GetUsuario.NombreUsuario;
         await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
     }
     #endregion
 }
-

@@ -14,8 +14,8 @@ namespace BrunoSpaBlazor.Models
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Solo se permiten letras.")]
         public string ApellidoUsuario { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El apellido es obligatorio.")]
-        [RegularExpression(@"^[0-9\s]+$", ErrorMessage = "Solo se permiten Numero.")]
+        [Required(ErrorMessage = "El Documento es obligatorio.")]
+        [RegularExpression(@"^[0-9\s]+$", ErrorMessage = "Solo se permiten Numeros.")]
         public string DocumentoUsuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El Correo Electronico es obligatorio.")]

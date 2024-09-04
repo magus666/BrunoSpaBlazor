@@ -1,0 +1,132 @@
+﻿<h3>MostarClientes</h3>
+
+@rendermode InteractiveServer
+@inject UsuarioService UsuarioService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<Card Class="card col-12 col-md-12 mb-3">
+    <CardBody>
+        <CardTitle>Lista de CLientes</CardTitle>
+        <CardSubTitle Class="mb-2 text-muted">Lista de Usuarios del Sistema</CardSubTitle>
+        @if (UsuarioService.ObtenerUsuarios() == null || !UsuarioService.ObtenerUsuarios().Any())
+        {
+            <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+                <h2>No hay Datos</h2>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Documento</th>
+                            <th>Correo Electronico</th>
+                            <th>Edad</th>
+                            <th>Fecha de Nacimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in UsuarioService.ObtenerUsuarios())
+                        {
+                            <tr>
+                                <td>@usuario.IdUsuario</td>
+                                <td>@usuario.NombreUsuario</td>
+                                <td>@usuario.ApellidoUsuario</td>
+                                <td>@usuario.DocumentoUsuario</td>
+                                <td>@usuario.CorreoElectronicoUsuario</td>
+                                <td>@usuario.EdadUsuario</td>
+                                <td>@usuario.FechaNacimientoUsuario</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    #region Variables Globales
+    UsuarioModel GetUsuario = new UsuarioModel();
+    #endregion
+
+    #region Notificacion Toast
+    List<ToastMessage> messages = new List<ToastMessage>();
+    private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
+    private ToastMessage CreateToastMessage(ToastType toastType, string message)
+    => new ToastMessage
+        {
+            Type = toastType,
+            Message = message,
+        };
+    #endregion
+
+    #region Crud Usuario
+    bool isEditing = false;
+    private async void AgregarUsuario()
+    {
+        if (isEditing)
+        {
+            UsuarioService.EditarUsuario(GetUsuario);
+            ShowMessage(ToastType.Warning, "Usuario editado exitosamente.");
+            isEditing = false;
+        }
+        else
+        {
+            UsuarioService.AgregarUsuario(GetUsuario);
+            await SaveToSessionStorage();
+            ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
+        }
+        LimpiarFormulario();
+    }
+
+    private void EditarUsuario(UsuarioModel usuario)
+    {
+        GetUsuario = usuario;
+        isEditing = true;
+    }
+
+    private void EliminarUsuario(int idUsuario)
+    {
+        UsuarioService.EliminarUsuario(idUsuario);
+        ShowMessage(ToastType.Danger, "Usuario eliminado exitosamente.");
+        LimpiarFormulario();
+    }
+    #endregion
+
+    #region Utilitarios
+    private void CalculaFechaNacimiento()
+    {
+        int anioNacimiento = DateTime.Now.Year - GetUsuario.EdadUsuario;
+        int mes = GetUsuario.FechaNacimientoUsuario.Month > 0 ? GetUsuario.FechaNacimientoUsuario.Month : 1;
+        int dia = GetUsuario.FechaNacimientoUsuario.Day > 0 ? GetUsuario.FechaNacimientoUsuario.Day : 1;
+        GetUsuario.FechaNacimientoUsuario = new DateOnly(anioNacimiento, mes, dia);
+    }
+
+    private void LimpiarFormulario()
+    {
+        GetUsuario = new UsuarioModel
+            {
+                FechaNacimientoUsuario = DateOnly.FromDateTime(DateTime.Now)
+            };
+        StateHasChanged();
+    }
+
+    private async Task SaveToSessionStorage()
+    {
+        string ValorVariableSesion = "";
+        ValorVariableSesion = GetUsuario.NombreUsuario;
+        await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
+    }
+    #endregion
+
+}
