@@ -1,6 +1,13 @@
 ﻿@page "/GestionMascotas"
+@using System.Text.Json
 @rendermode InteractiveServer
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+@if (usuario != null)
+{
+    <p>Nombre: @usuario.NombreUsuario</p>
+    <p>Apellido: @usuario.ApellidoUsuario</p>
+}
 
 <h3>@storedValue</h3>
 
@@ -21,5 +28,31 @@
             storedValue = await sessionStorage.GetItemAsync<string>("ValorSession");
         }
     }
+    protected override async Task OnInitializedAsync()
+    {
+        usuario = await GetFromSessionStorage();
+    }
+
+    private UsuarioModel usuario = new UsuarioModel();
+
+    private async Task<UsuarioModel> GetFromSessionStorage()
+    {
+        try
+        {
+            // Obtener la cadena JSON desde el almacenamiento de sesión
+            string usuarioJson = await sessionStorage.GetItemAsync<string>("UsuarioSession");
+
+            // Deserializar la cadena JSON a un objeto UsuarioModel si no está vacía
+            return !string.IsNullOrEmpty(usuarioJson) ? JsonSerializer.Deserialize<UsuarioModel>(usuarioJson) : null;
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores, por ejemplo, loguear el error
+            Console.WriteLine($"Error al recuperar de sesión: {ex.Message}");
+            return null;
+        }
+    }
+
+
 }
 

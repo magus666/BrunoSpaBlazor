@@ -1,13 +1,14 @@
-﻿@rendermode InteractiveServer
+﻿@using System.Text.Json
+@rendermode InteractiveServer
 @inject UsuarioService UsuarioService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
-<h3>CrearCliente</h3>
+<h3>Agregar Usuario</h3>
 
-<Card Class="card col-12 col-md-12 mb-3">
+<Card Class="card mb-3">
     <CardBody>
-        <CardTitle>Agregar Usuarios</CardTitle>
-        <CardSubTitle Class="mb-2 text-muted">Agregue nuevos Usuarios en el siguiente formulario</CardSubTitle>
+        <CardTitle>Lista de CLientes</CardTitle>
+        <CardSubTitle Class="mb-2 text-muted">Lista de Usuarios del Sistema</CardSubTitle>
         <EditForm Model="GetUsuario" OnValidSubmit="AgregarUsuario">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -42,64 +43,33 @@
                 <ValidationMessage For="@(() => GetUsuario.FechaNacimientoUsuario)" />
             </div>
             <div class="d-flex justify-content-end mt-3">
-                <Toasts class="p-3" Messages="messages" AutoHide="true" Delay="6000" Placement="ToastsPlacement.TopRight" />
-                <button class="btn btn-primary" type="submit">@((isEditing) ? "Actualizar" : "Agregar")</button>
+                <Toasts class="p-3" Messages="Avisos" AutoHide="true" Delay="6000" Placement="ToastsPlacement.TopRight" />
+                <button class="btn btn-primary" type="submit">Agregar</button>
             </div>
         </EditForm>
     </CardBody>
 </Card>
 
 @code {
-
-    #region Variables Globales
-    UsuarioModel GetUsuario = new UsuarioModel();
-    #endregion
-
-    #region Notificacion Toast
-    List<ToastMessage> messages = new List<ToastMessage>();
-    private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
+    List<ToastMessage> Avisos = new List<ToastMessage>();
+    private void ShowMessage(ToastType toastType, string message) => Avisos.Add(CreateToastMessage(toastType, message));
     private ToastMessage CreateToastMessage(ToastType toastType, string message)
     => new ToastMessage
         {
             Type = toastType,
             Message = message,
         };
-    #endregion
+    UsuarioModel GetUsuario = new UsuarioModel();
+    private List<string> messages = new List<string>();
 
-    #region Crud Usuario
-    bool isEditing = false;
     private async void AgregarUsuario()
     {
-        if (isEditing)
-        {
-            UsuarioService.EditarUsuario(GetUsuario);
-            ShowMessage(ToastType.Warning, "Usuario editado exitosamente.");
-            isEditing = false;
-        }
-        else
-        {
-            UsuarioService.AgregarUsuario(GetUsuario);
-            await SaveToSessionStorage();
-            ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
-        }
+        UsuarioService.AgregarUsuario(GetUsuario);
+        ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
+        await SaveToSessionStorage();
         LimpiarFormulario();
     }
 
-    private void EditarUsuario(UsuarioModel usuario)
-    {
-        GetUsuario = usuario;
-        isEditing = true;
-    }
-
-    private void EliminarUsuario(int idUsuario)
-    {
-        UsuarioService.EliminarUsuario(idUsuario);
-        ShowMessage(ToastType.Danger, "Usuario eliminado exitosamente.");
-        LimpiarFormulario();
-    }
-    #endregion
-
-    #region Utilitarios
     private void CalculaFechaNacimiento()
     {
         int anioNacimiento = DateTime.Now.Year - GetUsuario.EdadUsuario;
@@ -119,10 +89,23 @@
 
     private async Task SaveToSessionStorage()
     {
-        string ValorVariableSesion = "";
-        ValorVariableSesion = GetUsuario.NombreUsuario;
-        await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
-    }
-    #endregion
 
+        try
+        {
+            // Serializar el objeto GetUsuario a JSON
+            string usuarioJson = JsonSerializer.Serialize(GetUsuario);
+
+            // Guardar la cadena JSON en la variable de sesión
+            await sessionStorage.SetItemAsync("UsuarioSession", usuarioJson);
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores, por ejemplo, loguear el error
+            Console.WriteLine($"Error al guardar en sesión: {ex.Message}");
+        }
+
+
+        // string ValorVariableSesion = GetUsuario.NombreUsuario;
+        // await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
+    }
 }

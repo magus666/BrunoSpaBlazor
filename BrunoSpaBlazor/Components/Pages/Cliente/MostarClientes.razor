@@ -1,10 +1,9 @@
-﻿<h3>MostarClientes</h3>
-
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @inject UsuarioService UsuarioService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
-<Card Class="card col-12 col-md-12 mb-3">
+<h3>Gestion de Usuarios</h3>
+<Card Class="card mb-3">
     <CardBody>
         <CardTitle>Lista de CLientes</CardTitle>
         <CardSubTitle Class="mb-2 text-muted">Lista de Usuarios del Sistema</CardSubTitle>
@@ -57,11 +56,12 @@
 @code {
     #region Variables Globales
     UsuarioModel GetUsuario = new UsuarioModel();
+    bool isEditing = false;
     #endregion
 
     #region Notificacion Toast
-    List<ToastMessage> messages = new List<ToastMessage>();
-    private void ShowMessage(ToastType toastType, string message) => messages.Add(CreateToastMessage(toastType, message));
+    List<ToastMessage> Avisos = new List<ToastMessage>();
+    private void ShowMessage(ToastType toastType, string message) => Avisos.Add(CreateToastMessage(toastType, message));
     private ToastMessage CreateToastMessage(ToastType toastType, string message)
     => new ToastMessage
         {
@@ -70,47 +70,35 @@
         };
     #endregion
 
-    #region Crud Usuario
-    bool isEditing = false;
-    private async void AgregarUsuario()
+    private List<UsuarioModel> usuarios;
+
+    protected override void OnInitialized()
     {
-        if (isEditing)
-        {
-            UsuarioService.EditarUsuario(GetUsuario);
-            ShowMessage(ToastType.Warning, "Usuario editado exitosamente.");
-            isEditing = false;
-        }
-        else
-        {
-            UsuarioService.AgregarUsuario(GetUsuario);
-            await SaveToSessionStorage();
-            ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
-        }
-        LimpiarFormulario();
+        usuarios = UsuarioService.ObtenerUsuarios();
     }
 
     private void EditarUsuario(UsuarioModel usuario)
     {
+
         GetUsuario = usuario;
         isEditing = true;
     }
 
     private void EliminarUsuario(int idUsuario)
     {
-        UsuarioService.EliminarUsuario(idUsuario);
-        ShowMessage(ToastType.Danger, "Usuario eliminado exitosamente.");
-        LimpiarFormulario();
+        try
+        {
+            UsuarioService.EliminarUsuario(idUsuario);
+            usuarios = UsuarioService.ObtenerUsuarios(); // Actualizar la lista de usuarios
+            ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores
+            Console.WriteLine($"Error al eliminar usuario: {ex.Message}");
+        }
     }
-    #endregion
-
-    #region Utilitarios
-    private void CalculaFechaNacimiento()
-    {
-        int anioNacimiento = DateTime.Now.Year - GetUsuario.EdadUsuario;
-        int mes = GetUsuario.FechaNacimientoUsuario.Month > 0 ? GetUsuario.FechaNacimientoUsuario.Month : 1;
-        int dia = GetUsuario.FechaNacimientoUsuario.Day > 0 ? GetUsuario.FechaNacimientoUsuario.Day : 1;
-        GetUsuario.FechaNacimientoUsuario = new DateOnly(anioNacimiento, mes, dia);
-    }
+    
 
     private void LimpiarFormulario()
     {
@@ -120,13 +108,4 @@
             };
         StateHasChanged();
     }
-
-    private async Task SaveToSessionStorage()
-    {
-        string ValorVariableSesion = "";
-        ValorVariableSesion = GetUsuario.NombreUsuario;
-        await sessionStorage.SetItemAsync("ValorSession", ValorVariableSesion);
-    }
-    #endregion
-
 }
