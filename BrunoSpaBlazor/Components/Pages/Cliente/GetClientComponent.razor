@@ -2,15 +2,17 @@
 @inject UsuarioService UsuarioService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
-<h3>Gestion de Usuarios</h3>
 <Card Class="card mb-3">
     <CardBody>
-        <CardTitle>Lista de CLientes</CardTitle>
+        <div class="d-flex justify-content-between align-items-center">
+            <CardTitle>Lista de Clientes</CardTitle>
+            <button class="btn btn-primary btn-sm ml-auto" @onclick="RecuperarUsuariosAsync">Mostrar Datos</button>
+        </div>
         <CardSubTitle Class="mb-2 text-muted">Lista de Usuarios del Sistema</CardSubTitle>
         @if (UsuarioService.ObtenerUsuarios() == null || !UsuarioService.ObtenerUsuarios().Any())
         {
             <div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
-                <h2>No hay Datos</h2>
+                <h3>No hay Data</h3>
             </div>
         }
         else
@@ -30,7 +32,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var usuario in UsuarioService.ObtenerUsuarios())
+                        @foreach (var usuario in ListaUsuario)
                         {
                             <tr>
                                 <td>@usuario.IdUsuario</td>
@@ -54,6 +56,9 @@
 </Card>
 
 @code {
+    [Parameter]
+    public List<UsuarioModel>? GetUsuarioDesdeCliente { get; set; }
+    string Mensaje = "";
     #region Variables Globales
     UsuarioModel GetUsuario = new UsuarioModel();
     bool isEditing = false;
@@ -70,11 +75,20 @@
         };
     #endregion
 
-    private List<UsuarioModel> usuarios;
+    private List<UsuarioModel>ListaUsuario = new List<UsuarioModel>();
 
-    protected override void OnInitialized()
+
+    private async Task RecuperarUsuariosAsync()
     {
-        usuarios = UsuarioService.ObtenerUsuarios();
+        var usuarios = await sessionStorage.GetItemAsync<List<UsuarioModel>>("UsuarioSession");
+        if (usuarios.Count != 0)
+        {
+            ListaUsuario = usuarios;
+        }
+        else
+        {
+            Mensaje = "Melo";
+        }
     }
 
     private void EditarUsuario(UsuarioModel usuario)
@@ -89,7 +103,7 @@
         try
         {
             UsuarioService.EliminarUsuario(idUsuario);
-            usuarios = UsuarioService.ObtenerUsuarios(); // Actualizar la lista de usuarios
+            ListaUsuario = UsuarioService.ObtenerUsuarios(); // Actualizar la lista de usuarios
             ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
         }
         catch (Exception ex)

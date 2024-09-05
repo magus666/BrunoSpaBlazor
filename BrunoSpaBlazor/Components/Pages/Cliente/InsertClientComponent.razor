@@ -3,8 +3,6 @@
 @inject UsuarioService UsuarioService
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 
-<h3>Agregar Usuario</h3>
-
 <Card Class="card mb-3">
     <CardBody>
         <CardTitle>Lista de CLientes</CardTitle>
@@ -49,8 +47,9 @@
         </EditForm>
     </CardBody>
 </Card>
-
+@* <GetClientComponent GetUsuarioDesdeCliente="PerriUsuarios"/> *@
 @code {
+    public List<UsuarioModel> PerriUsuarios = new List<UsuarioModel>();
     List<ToastMessage> Avisos = new List<ToastMessage>();
     private void ShowMessage(ToastType toastType, string message) => Avisos.Add(CreateToastMessage(toastType, message));
     private ToastMessage CreateToastMessage(ToastType toastType, string message)
@@ -68,7 +67,14 @@
         ShowMessage(ToastType.Success, "Usuario agregado exitosamente.");
         await SaveToSessionStorage();
         LimpiarFormulario();
+        // Muestrelos();
     }
+
+    
+    // public void Muestrelos()
+    // {
+    //     PerriUsuarios = UsuarioService.ObtenerUsuarios();
+    // }
 
     private void CalculaFechaNacimiento()
     {

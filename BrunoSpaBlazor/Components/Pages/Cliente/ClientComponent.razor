@@ -1,0 +1,40 @@
+﻿@page "/ClientComponent"
+@using BrunoSpaBlazor.Components.Pages.Cliente
+@rendermode InteractiveServer
+@inject UsuarioService UsuarioService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<Tabs EnableFadeEffect="true"
+      OnShown="@(args => OnTabShownAsync(args))">
+
+    <Tab Name ="AgregarCliente" IsActive="false">
+        <TitleTemplate>
+            <Icon Name="IconName.HouseFill" /> Agregar Cliente
+        </TitleTemplate>
+        <Content>
+            <InsertClientComponent/>
+        </Content>
+    </Tab>
+    <Tab Name="MostrarCliente">
+        <TitleTemplate>
+            <Icon Name="IconName.PersonFill" /> Mostar Clientes
+        </TitleTemplate>
+        <Content>
+            <GetClientComponent />
+        </Content>
+    </Tab>
+</Tabs>
+@code {
+    private List<UsuarioModel>? usuarios;
+    string NombreTab = "";
+
+    private async Task OnTabShownAsync(TabsEventArgs args)
+    {  
+        NombreTab = args.ActiveTabName;
+        if (NombreTab == "MostrarCliente")
+        {
+            usuarios = UsuarioService.ObtenerUsuarios();
+            await sessionStorage.SetItemAsync("UsuarioSession", usuarios);
+        }
+    }
+}
