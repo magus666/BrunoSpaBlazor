@@ -43,7 +43,7 @@
                                 <td>@usuario.EdadUsuario</td>
                                 <td>@usuario.FechaNacimientoUsuario</td>
                                 <td>
-                                    <button class="btn btn-warning btn-sm" @onclick="() => EditarUsuario(usuario)">Edit</button>
+                                    <button class="btn btn-warning btn-sm" @onclick="OnShowModalClick">Edit</button>
                                     <button class="btn btn-danger btn-sm" @onclick="() => EliminarUsuario(usuario.IdUsuario)">Delete</button>
                                 </td>
                             </tr>
@@ -55,9 +55,60 @@
     </CardBody>
 </Card>
 
+<Modal @ref="modal" Title="Modal title">
+    <BodyTemplate>
+        <EditForm Model="GetUsuario">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div>
+                <label for="Nombre">Nombre:</label>
+                <InputText id="TxtNombre" @bind-Value="GetUsuario.NombreUsuario" class="form-control" />
+                <ValidationMessage For="@(() => GetUsuario.NombreUsuario)" />
+            </div>
+            <div>
+                <label for="Apellido">Apellido:</label>
+                <InputText id="TxtApellido" @bind-Value="GetUsuario.ApellidoUsuario" class="form-control" />
+                <ValidationMessage For="@(() => GetUsuario.ApellidoUsuario)" />
+            </div>
+            <div>
+                <label for="Documento">Documento:</label>
+                <InputText id="TxtDocumento" @bind-Value="GetUsuario.DocumentoUsuario" class="form-control" />
+                <ValidationMessage For="@(() => GetUsuario.DocumentoUsuario)" />
+            </div>
+            <div>
+                <label for="Correo">Correo:</label>
+                <InputText id="TxtCorreo" @bind-Value="GetUsuario.CorreoElectronicoUsuario" class="form-control" />
+                <ValidationMessage For="@(() => GetUsuario.CorreoElectronicoUsuario)" />
+            </div>
+            <div>
+                <label for="FechaNacimiento">Fecha de Nacimiento:</label>
+                <InputDate id="TxtFechaNacimiento" @bind-Value="GetUsuario.FechaNacimientoUsuario" class="form-control" />
+                <ValidationMessage For="@(() => GetUsuario.FechaNacimientoUsuario)" />
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary" Type="ButtonType.Submit">Guardar Cambios</Button>
+    </FooterTemplate>
+</Modal>
+
 @code {
-    [Parameter]
-    public List<UsuarioModel>? GetUsuarioDesdeCliente { get; set; }
+
+    private List<UsuarioModel> ListaUsuario = new List<UsuarioModel>();
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+
     string Mensaje = "";
     #region Variables Globales
     UsuarioModel GetUsuario = new UsuarioModel();
@@ -74,9 +125,6 @@
             Message = message,
         };
     #endregion
-
-    private List<UsuarioModel>ListaUsuario = new List<UsuarioModel>();
-
 
     private async Task RecuperarUsuariosAsync()
     {

@@ -17,7 +17,7 @@ namespace BrunoSpaBlazor.Services
             usuario.IdUsuario = nextId++;
             usuarios.Add(usuario);
         }
-        public void EditarUsuario(UsuarioModel usuario)
+        public UsuarioModel? EditarUsuario(UsuarioModel usuario)
         {
             var usuarioExistente = (from x in usuarios
                                     where x.IdUsuario == usuario.IdUsuario
@@ -26,9 +26,11 @@ namespace BrunoSpaBlazor.Services
             {
                 usuarioExistente.NombreUsuario = usuario.NombreUsuario;
                 usuarioExistente.ApellidoUsuario = usuario.ApellidoUsuario;
-                usuarioExistente.EdadUsuario = usuario.EdadUsuario;
                 usuarioExistente.FechaNacimientoUsuario = usuario.FechaNacimientoUsuario;
+
+                return usuarioExistente;
             }
+            return null;
         }
 
         public void EliminarUsuario(int idUsuario)
